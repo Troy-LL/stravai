@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  handle    String   @unique
+  avatarUrl String?
+  createdAt DateTime @default(now())
+
+  activities       Activity[]
+  kudosGiven       Kudos[]      @relation("KudosGiven")
+  friendships      Friendship[] @relation("UserFriendships")
+  friendOf         Friendship[] @relation("FriendOf")
+  apiTokens        ApiToken[]
+}
+
+model ApiToken {
+  id         String    @id @default(cuid())
+  userId     String
+  name       String
+  tokenHash  String    @unique
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  userId    String
+  friendId  String
+  createdAt DateTime @default(now())
+
+  user   User @relation("UserFriendships", fields: [userId], references: [id], onDelete: Cascade)
+  friend User @relation("FriendOf", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId])
+  @@index([userId])
+  @@index([friendId])
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   @default("coding")
+  title       String
+  startedAt   DateTime
+  endedAt     DateTime
+  durationSec Int
+  locAdded    Int      @default(0)
+  locRemoved  Int      @default(0)
+  locNet      Int      @default(0)
+  repo        String?
+  commitCount Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kudos Kudos[]
+
+  @@index([userId, startedAt])
+  @@index([startedAt])
+}
+
+model Kudos {
+  id         String   @id @default(cuid())
+  activityId String
+  userId     String
+  createdAt  DateTime @default(now())
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user     User     @relation("KudosGiven", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([activityId, userId])
+  @@index([activityId])
+}

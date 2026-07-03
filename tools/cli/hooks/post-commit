@@ -1,0 +1,10 @@
+#!/bin/sh
+# StravAI post-commit hook — installed by `stravai install-hook`
+# Requires STRAVAI_URL and STRAVAI_TOKEN in the environment.
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CLI="$SCRIPT_DIR/../../tools/cli/bin/stravai.js"
+
+if [ -f "$CLI" ]; then
+  node "$CLI" record
+fi

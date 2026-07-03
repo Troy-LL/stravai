@@ -1,0 +1,13 @@
+{
+  "name": "@stravai/cli",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "stravai": "./bin/stravai.js"
+  },
+  "scripts": {
+    "record": "node bin/stravai.js record",
+    "install-hook": "node bin/stravai.js install-hook"
+  }
+}
