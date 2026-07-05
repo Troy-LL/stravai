@@ -7,7 +7,7 @@
 | App | Next.js 15 (App Router, TypeScript) — full-stack monolith |
 | ORM / DB | Prisma + Postgres |
 | Styling | Tailwind CSS v4 |
-| Auth (web) | Demo user cookie switcher; GitHub OAuth deferred |
+| Auth (web) | GitHub OAuth via Auth.js; JWT sessions |
 | Auth (headless) | API bearer tokens (`Authorization: Bearer sai_...`) |
 | Leaderboards | On-demand Prisma aggregation (weekly LOC net among friends) |
 | Clients | Web app, CLI (`tools/cli`), VS Code extension (`extensions/vscode`) |
@@ -19,18 +19,18 @@ All activity writes go through a single API endpoint:
 ```
 POST /api/activities
 Authorization: Bearer <token>   # CLI, git hook, VS Code
-# or demo cookie for browser form
+# or GitHub session for browser form
 ```
 
 Fields: `startedAt`, `durationSec`, `locAdded`, `locRemoved`, `commitCount`, optional `title` and `repo`. Server computes `locNet` and auto-generates title when omitted.
 
 Routes:
-- `GET /api/activities` — feed (cookie auth)
+- `GET /api/activities` — feed (session auth)
 - `POST /api/activities/:id/kudos` — toggle kudos
 - `GET /api/leaderboard` — weekly friend rankings
-- `POST /api/user` — set demo current-user cookie
-- `GET/POST /api/tokens` — list/create API tokens (cookie auth)
+- `GET/POST /api/tokens` — list/create API tokens (session auth)
 - `DELETE /api/tokens/:id` — revoke token
+- `GET/POST /api/auth/*` — GitHub OAuth (Auth.js)
 
 ## Data capture
 
@@ -40,14 +40,15 @@ Routes:
 | API tokens + Settings | Auth for headless clients | shipped (v0.2) |
 | CLI `stravai record` | Git diff LOC + post-commit capture | shipped (v0.2) |
 | VS Code extension | Start/stop session; duration + LOC | shipped (v0.2) |
-| GitHub webhook / OAuth | Commit events + real identity | deferred |
+| GitHub OAuth | Real identity + sign-in | shipped (v0.3) |
+| GitHub webhook | Commit events | deferred |
 | Claude Code / Cursor logs | Token stats, tool-call history | deferred |
 
 ## Data model
 
 ```
 User
- - id, name, handle, avatarUrl
+ - id, githubId, name, handle, avatarUrl
 
 ApiToken
  - id, userId, name, tokenHash, lastUsedAt

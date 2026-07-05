@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { getAllUsers, getCurrentUser } from "@/lib/currentUser";
-import { UserSwitcher } from "@/components/UserSwitcher";
+import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/currentUser";
+import { AuthButton } from "@/components/AuthButton";
 
 const links = [
   { href: "/", label: "Feed" },
@@ -10,10 +11,21 @@ const links = [
 ];
 
 export async function Nav() {
-  const [currentUser, users] = await Promise.all([
-    getCurrentUser(),
-    getAllUsers(),
-  ]);
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return (
+      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur">
+        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
+          <Link href="/" className="text-lg font-bold tracking-tight text-accent">
+            StravAI
+          </Link>
+        </div>
+      </header>
+    );
+  }
+
+  const currentUser = await getCurrentUser();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur">
@@ -40,7 +52,7 @@ export async function Nav() {
             </Link>
           </nav>
         </div>
-        <UserSwitcher users={users} currentHandle={currentUser.handle} />
+        <AuthButton />
       </div>
       <nav className="flex gap-4 overflow-x-auto border-t border-border px-4 py-2 sm:hidden">
         {links.map((link) => (

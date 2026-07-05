@@ -16,12 +16,12 @@ Prioritized work after v0.1. See [SPEC.md](SPEC.md) for product scope and [ARCHI
 
 | ID | Item | Notes |
 |---|---|---|
-| N-1 | GitHub OAuth | Replace demo user switcher |
+| N-1 | GitHub OAuth | Replace demo user switcher | done |
 | N-2 | Activity detail page | `/activity/[id]` with full stats |
 | N-3 | Comments on activities | Extend social layer |
 | N-4 | Streaks | Consecutive days with logged activity |
 | N-5 | Leaderboard filters | daily / monthly / all-time |
-| N-6 | Deploy to Vercel | Production Postgres (Neon) |
+| N-6 | Deploy to Vercel | Production Postgres (Neon) | done (see DEPLOY.md) |
 | N-7 | Tests | API routes + key UI flows |
 
 ## Later — Product expansion

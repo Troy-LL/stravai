@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/currentUser";
 import { findUserByApiToken } from "@/lib/tokens";
 import type { User } from "@prisma/client";
@@ -31,4 +31,12 @@ export class AuthError extends Error {
     super(message);
     this.name = "AuthError";
   }
+}
+
+export function handleRouteError(error: unknown, fallback: string) {
+  if (error instanceof AuthError) {
+    return NextResponse.json({ error: error.message }, { status: error.status });
+  }
+  console.error(error);
+  return NextResponse.json({ error: fallback }, { status: 500 });
 }

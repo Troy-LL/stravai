@@ -43,9 +43,9 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Demo users
+## Demo users (local seed only)
 
-After seeding, four demo users are available. Use the **Viewing as** switcher in the nav to impersonate:
+After `npm run db:seed`, four demo users exist in the database for local testing. They are **not** linked to GitHub OAuth — sign in with your own GitHub account in the app.
 
 | Handle   | Name        |
 |----------|-------------|
@@ -54,7 +54,15 @@ After seeding, four demo users are available. Use the **Viewing as** switcher in
 | `sam`    | Sam Rivera  |
 | `taylor` | Taylor Kim  |
 
-Default user: `alex` (set via `DEFAULT_USER_HANDLE`).
+## Auth
+
+Sign in with **GitHub** at `/login`. First sign-in creates your profile (handle from GitHub login).
+
+Required env vars — see [`.env.example`](../.env.example):
+
+- `AUTH_SECRET` — session signing key
+- `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` — GitHub OAuth app
+- `AUTH_URL` — canonical URL (`http://localhost:3000` locally)
 
 ## Screens
 
@@ -66,7 +74,7 @@ Default user: `alex` (set via `DEFAULT_USER_HANDLE`).
 
 ## API tokens (auto-capture auth)
 
-1. Open **Settings** in the nav (while viewing as your demo user).
+1. Open **Settings** in the nav (while signed in).
 2. Generate a token and copy it immediately (`sai_...`).
 3. Export for CLI/hook:
 
@@ -128,16 +136,16 @@ Content-Type: application/json
 }
 ```
 
-Browser form uses the demo cookie instead of Bearer token.
+Browser form uses your GitHub session. Headless clients use Bearer token.
 
 Other routes:
 
-- `GET /api/activities` — feed for current user
+- `GET /api/activities` — feed for signed-in user
 - `POST /api/activities/:id/kudos` — toggle kudos
 - `GET /api/leaderboard` — weekly friend rankings
 - `GET/POST /api/tokens` — manage API tokens
 - `DELETE /api/tokens/:id` — revoke token
-- `POST /api/user` — set demo current-user cookie
+- `GET/POST /api/auth/*` — Auth.js (GitHub OAuth)
 
 ## Scripts
 
@@ -150,4 +158,4 @@ Other routes:
 
 ## Docs
 
-Product and architecture docs live in [`docs/`](docs/). Prioritized backlog: [`docs/BACKLOG.md`](docs/BACKLOG.md).
+Product and architecture docs live in [`docs/`](docs/). Prioritized backlog: [`docs/BACKLOG.md`](docs/BACKLOG.md). Deploy guide: [`docs/DEPLOY.md`](docs/DEPLOY.md).

@@ -63,7 +63,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for data model, ingestion, and stack.
 3. **Anti-cheat:** prevent vendored-code paste attacks on leaderboards (analogous to Strava GPS spoofing).
 4. **Privacy:** team/manager visibility of pace data — opt-in/opt-out design needed early.
 5. **Solo vs AI-assisted:** track human-only coding too, or strictly AI-assisted sessions?
-6. **Auth:** GitHub OAuth deferred to Phase 2; v0.1 uses a demo user switcher cookie.
+6. **Auth:** GitHub OAuth via Auth.js (shipped). Demo seed users remain for local dev only.
 
 ## Roadmap
 

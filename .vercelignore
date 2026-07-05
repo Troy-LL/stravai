@@ -1,0 +1,4 @@
+.env
+.env.*
+extensions/
+tools/cli/node_modules/

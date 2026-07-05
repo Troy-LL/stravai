@@ -44,3 +44,9 @@ next-env.d.ts
 
 # CLI runtime marker
 tools/cli/.stravai-last-commit
+
+# Afro cursor agent harness (https://github.com/Troy-LL/Afro) — local-only
+.cursor/
+reference/
+ponytail/
+.env*

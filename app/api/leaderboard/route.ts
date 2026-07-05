@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { handleRouteError } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/currentUser";
 import { getWeeklyLeaderboard } from "@/lib/queries";
 import { getWeekBounds } from "@/lib/format";
@@ -23,10 +24,6 @@ export async function GET() {
       })),
     });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Failed to load leaderboard" },
-      { status: 500 },
-    );
+    return handleRouteError(error, "Failed to load leaderboard");
   }
 }

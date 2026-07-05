@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { handleRouteError } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/currentUser";
 import { revokeApiToken } from "@/lib/tokens";
 
@@ -16,7 +17,6 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to revoke token" }, { status: 500 });
+    return handleRouteError(error, "Failed to revoke token");
   }
 }

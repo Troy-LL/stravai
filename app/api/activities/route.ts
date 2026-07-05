@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { AuthError, resolveUser } from "@/lib/auth";
+import { handleRouteError, resolveUser } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/currentUser";
 import { generateActivityTitle } from "@/lib/format";
 import { getFeedActivities } from "@/lib/queries";
@@ -29,11 +29,7 @@ export async function GET() {
 
     return NextResponse.json({ activities: payload });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Failed to load activities" },
-      { status: 500 },
-    );
+    return handleRouteError(error, "Failed to load activities");
   }
 }
 
@@ -109,13 +105,6 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
-    }
-    console.error(error);
-    return NextResponse.json(
-      { error: "Failed to create activity" },
-      { status: 500 },
-    );
+    return handleRouteError(error, "Failed to create activity");
   }
 }

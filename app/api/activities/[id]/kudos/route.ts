@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { handleRouteError } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/currentUser";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -35,7 +36,6 @@ export async function POST(_request: NextRequest, context: RouteContext) {
     const count = await prisma.kudos.count({ where: { activityId: id } });
     return NextResponse.json({ hasKudoed: true, kudosCount: count });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to toggle kudos" }, { status: 500 });
+    return handleRouteError(error, "Failed to toggle kudos");
   }
 }
