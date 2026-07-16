@@ -79,7 +79,12 @@ export function ActivityCard({ activity, showKudos = true }: ActivityCardProps) 
             >
               {t.icon}
             </span>
-            <h2 className="font-semibold leading-snug">{activity.title}</h2>
+            <Link
+              href={`/activity/${activity.id}`}
+              className="font-semibold leading-snug hover:text-accent"
+            >
+              {activity.title}
+            </Link>
           </div>
           <p className="mt-1 text-sm text-muted">
             <span style={{ color: t.color }}>{t.label}</span>
