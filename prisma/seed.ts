@@ -15,7 +15,10 @@ function addMinutes(date: Date, minutes: number) {
 }
 
 async function main() {
+  await prisma.comment.deleteMany();
   await prisma.kudos.deleteMany();
+  await prisma.challengeMember.deleteMany();
+  await prisma.challenge.deleteMany();
   await prisma.activity.deleteMany();
   await prisma.friendship.deleteMany();
   await prisma.user.deleteMany();
@@ -145,13 +148,15 @@ async function main() {
     },
   ];
 
+  const types = ["coding", "planning", "debugging", "review"];
   const activities = [];
-  for (const item of activityData) {
+  for (const [i, item] of activityData.entries()) {
     const endedAt = addMinutes(item.startedAt, item.durationMin);
+    const gross = item.locAdded + item.locRemoved;
     const activity = await prisma.activity.create({
       data: {
         userId: item.userId,
-        type: "coding",
+        type: types[i % types.length],
         title: item.title,
         startedAt: item.startedAt,
         endedAt,
@@ -159,11 +164,55 @@ async function main() {
         locAdded: item.locAdded,
         locRemoved: item.locRemoved,
         locNet: item.locAdded - item.locRemoved,
+        tokens: gross * 30 + item.durationMin * 200,
+        filesTouched: Math.max(1, Math.round(gross / 80)),
+        visibility: "friends",
         repo: item.repo,
         commitCount: item.commitCount,
       },
     });
     activities.push(activity);
+  }
+
+  await prisma.comment.createMany({
+    data: [
+      { activityId: activities[0].id, userId: sam.id, body: "Clean refactor 🔥" },
+      { activityId: activities[0].id, userId: taylor.id, body: "Those numbers are wild" },
+      { activityId: activities[2].id, userId: alex.id, body: "Late night grind respect" },
+      { activityId: activities[3].id, userId: jordan.id, body: "Nice API sprint" },
+    ],
+  });
+
+  const now = new Date();
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const challenges = await Promise.all([
+    prisma.challenge.create({
+      data: {
+        title: "10,000 LOC This Month",
+        description: "Ship 10k net lines as a team before month end.",
+        metric: "locNet",
+        goal: 10000,
+        startsAt: monthStart,
+        endsAt: monthEnd,
+      },
+    }),
+    prisma.challenge.create({
+      data: {
+        title: "Marathon Coder",
+        description: "Log 20 hours of coding sessions this month.",
+        metric: "durationSec",
+        goal: 20 * 3600,
+        startsAt: monthStart,
+        endsAt: monthEnd,
+      },
+    }),
+  ]);
+
+  for (const c of challenges) {
+    await prisma.challengeMember.createMany({
+      data: users.map((u) => ({ challengeId: c.id, userId: u.id })),
+    });
   }
 
   await prisma.kudos.createMany({

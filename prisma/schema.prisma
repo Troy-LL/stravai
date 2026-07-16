@@ -18,9 +18,11 @@ model User {
 
   activities       Activity[]
   kudosGiven       Kudos[]      @relation("KudosGiven")
+  comments         Comment[]
   friendships      Friendship[] @relation("UserFriendships")
   friendOf         Friendship[] @relation("FriendOf")
   apiTokens        ApiToken[]
+  challengeMembers ChallengeMember[]
 }
 
 model ApiToken {
@@ -61,15 +63,60 @@ model Activity {
   locAdded    Int      @default(0)
   locRemoved  Int      @default(0)
   locNet      Int      @default(0)
+  tokens      Int      @default(0)
+  filesTouched Int     @default(0)
+  visibility  String   @default("friends") // public | friends | private
   repo        String?
   commitCount Int      @default(0)
   createdAt   DateTime @default(now())
 
-  user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  kudos Kudos[]
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kudos    Kudos[]
+  comments Comment[]
 
   @@index([userId, startedAt])
   @@index([startedAt])
+  @@index([type])
+  @@index([repo])
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  activityId String
+  userId     String
+  body       String
+  createdAt  DateTime @default(now())
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([activityId])
+}
+
+model Challenge {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  metric      String   @default("locNet") // locNet | tokens | durationSec | activityCount
+  goal        Int
+  startsAt    DateTime
+  endsAt      DateTime
+  createdAt   DateTime @default(now())
+
+  members ChallengeMember[]
+}
+
+model ChallengeMember {
+  id          String   @id @default(cuid())
+  challengeId String
+  userId      String
+  joinedAt    DateTime @default(now())
+
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@index([challengeId])
 }
 
 model Kudos {
