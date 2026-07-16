@@ -241,6 +241,10 @@ export async function getUserActivities(handle: string) {
     include: {
       user: { select: { id: true, name: true, handle: true, avatarUrl: true } },
       kudos: { select: { userId: true } },
+      comments: {
+        include: { user: { select: { name: true, handle: true, avatarUrl: true } } },
+        orderBy: { createdAt: "asc" },
+      },
     },
     orderBy: { startedAt: "desc" },
   });

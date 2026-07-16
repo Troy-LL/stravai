@@ -164,6 +164,12 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                   hasKudoed: activity.kudos.some(
                     (k) => k.userId === currentUser.id,
                   ),
+                  comments: activity.comments.map((c) => ({
+                    id: c.id,
+                    body: c.body,
+                    createdAt: c.createdAt.toISOString(),
+                    user: c.user,
+                  })),
                 }}
               />
             ))}
