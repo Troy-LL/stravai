@@ -4,3 +4,6 @@ Base recorded per task before dispatch.
 Task 1 (anti-cheat validateActivity): complete — reviewed, NaN gap fixed, 29 tests pass. UNCOMMITTED per user hold.
 Task 2 (regression tests streak+range): complete — 22 tests pass. UNCOMMITTED.
 Note: subagents auto-committed despite instruction; soft-reset to caa07e1. Remaining tasks done inline.
+Task 3 (activity detail + title link): complete, QA'd. UNCOMMITTED.
+Task 4 (badges): complete, QA'd, tests pass. UNCOMMITTED.
+Final review: no blocking findings. 78 tests pass, tsc/lint clean.
