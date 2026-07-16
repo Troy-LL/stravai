@@ -4,6 +4,7 @@ import { handleRouteError, resolveUser } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/currentUser";
 import { generateActivityTitle } from "@/lib/format";
 import { getFeedActivities } from "@/lib/queries";
+import { validateActivity } from "@/lib/validateActivity";
 
 export async function GET() {
   try {
@@ -69,6 +70,23 @@ export async function POST(request: NextRequest) {
     const added = Number(locAdded) || 0;
     const removed = Number(locRemoved) || 0;
     const locNet = added - removed;
+    const coercedTokens = Number(tokens) || 0;
+    const coercedFilesTouched = Number(filesTouched) || 0;
+    const coercedCommitCount = Number(commitCount) || 0;
+    const coercedDurationSec = Number(durationSec);
+
+    const validationResult = validateActivity({
+      durationSec: coercedDurationSec,
+      locAdded: added,
+      locRemoved: removed,
+      tokens: coercedTokens,
+      filesTouched: coercedFilesTouched,
+      commitCount: coercedCommitCount,
+    });
+
+    if (!validationResult.ok) {
+      return NextResponse.json({ error: validationResult.error }, { status: 400 });
+    }
 
     const activity = await prisma.activity.create({
       data: {
@@ -79,15 +97,15 @@ export async function POST(request: NextRequest) {
           generateActivityTitle(start, repo?.trim() || null),
         startedAt: start,
         endedAt: end,
-        durationSec: Number(durationSec),
+        durationSec: coercedDurationSec,
         locAdded: added,
         locRemoved: removed,
         locNet,
-        tokens: Number(tokens) || 0,
-        filesTouched: Number(filesTouched) || 0,
+        tokens: coercedTokens,
+        filesTouched: coercedFilesTouched,
         visibility: vis,
         repo: repo?.trim() || null,
-        commitCount: Number(commitCount) || 0,
+        commitCount: coercedCommitCount,
       },
       include: {
         user: { select: { id: true, name: true, handle: true, avatarUrl: true } },
