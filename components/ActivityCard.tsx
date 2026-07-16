@@ -4,9 +4,12 @@ import {
   formatLoc,
   formatPace,
   formatRelativeTime,
+  formatTokens,
 } from "@/lib/format";
+import { activityType } from "@/lib/constants";
 import { KudosButton } from "@/components/KudosButton";
 import { StatPill } from "@/components/StatPill";
+import { CommentThread, type CommentData } from "@/components/CommentThread";
 
 export type ActivityCardData = {
   id: string;
@@ -15,6 +18,9 @@ export type ActivityCardData = {
   startedAt: string;
   durationSec: number;
   locNet: number;
+  tokens: number;
+  filesTouched: number;
+  visibility?: string;
   commitCount: number;
   repo: string | null;
   user: {
@@ -25,6 +31,7 @@ export type ActivityCardData = {
   };
   kudosCount: number;
   hasKudoed: boolean;
+  comments?: CommentData[];
 };
 
 type ActivityCardProps = {
@@ -34,9 +41,10 @@ type ActivityCardProps = {
 
 export function ActivityCard({ activity, showKudos = true }: ActivityCardProps) {
   const startedAt = new Date(activity.startedAt);
+  const t = activityType(activity.type);
 
   return (
-    <article className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <article className="card p-4">
       <div className="flex items-start gap-3">
         {activity.user.avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -64,24 +72,31 @@ export function ActivityCard({ activity, showKudos = true }: ActivityCardProps) 
             </span>
           </div>
           <div className="mt-1 flex items-center gap-2">
-            <span className="text-lg" aria-label="Coding activity">
-              🏃
+            <span
+              className="text-lg"
+              title={`${t.label} (${t.analogy})`}
+              aria-label={`${t.label} activity`}
+            >
+              {t.icon}
             </span>
             <h2 className="font-semibold leading-snug">{activity.title}</h2>
           </div>
-          {activity.repo && (
-            <p className="mt-1 text-sm text-muted">{activity.repo}</p>
-          )}
+          <p className="mt-1 text-sm text-muted">
+            <span style={{ color: t.color }}>{t.label}</span>
+            {activity.repo && <> · {activity.repo}</>}
+          </p>
         </div>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <StatPill label="Duration" value={formatDuration(activity.durationSec)} />
         <StatPill label="LOC net" value={formatLoc(activity.locNet)} />
+        <StatPill label="Tokens" value={formatTokens(activity.tokens)} />
         <StatPill
           label="Pace"
           value={formatPace(activity.locNet, activity.durationSec)}
         />
+        <StatPill label="Files" value={String(activity.filesTouched)} />
         <StatPill label="Commits" value={String(activity.commitCount)} />
       </div>
 
@@ -91,6 +106,10 @@ export function ActivityCard({ activity, showKudos = true }: ActivityCardProps) 
             activityId={activity.id}
             initialCount={activity.kudosCount}
             initialHasKudoed={activity.hasKudoed}
+          />
+          <CommentThread
+            activityId={activity.id}
+            initial={activity.comments ?? []}
           />
         </div>
       )}

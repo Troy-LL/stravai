@@ -6,6 +6,8 @@ import { AuthButton } from "@/components/AuthButton";
 const links = [
   { href: "/", label: "Feed" },
   { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/segments", label: "Segments" },
+  { href: "/challenges", label: "Challenges" },
   { href: "/record", label: "Record" },
   { href: "/settings", label: "Settings" },
 ];

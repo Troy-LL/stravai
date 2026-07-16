@@ -1,4 +1,5 @@
 import { GitHubSignInButton } from "@/components/GitHubSignInButton";
+import { DevLogin } from "@/components/DevLogin";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
@@ -23,6 +24,9 @@ export default async function LoginPage({
         </p>
       </div>
       <GitHubSignInButton redirectTo={callbackUrl ?? "/"} />
+      {process.env.NODE_ENV !== "production" && (
+        <DevLogin redirectTo={callbackUrl ?? "/"} />
+      )}
       <p className="text-xs text-muted">
         If GitHub shows a 404, sign out of GitHub first, try Chrome instead of
         Brave, or recreate the OAuth app under your personal account at{" "}

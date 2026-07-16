@@ -40,10 +40,14 @@ export async function POST(request: NextRequest) {
 
     const {
       title,
+      type = "coding",
       startedAt,
       durationSec,
       locAdded = 0,
       locRemoved = 0,
+      tokens = 0,
+      filesTouched = 0,
+      visibility = "friends",
       repo,
       commitCount = 0,
     } = body;
@@ -55,6 +59,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const validTypes = ["coding", "planning", "debugging", "review"];
+    const activityType = validTypes.includes(type) ? type : "coding";
+    const validVis = ["public", "friends", "private"];
+    const vis = validVis.includes(visibility) ? visibility : "friends";
+
     const start = new Date(startedAt);
     const end = new Date(start.getTime() + durationSec * 1000);
     const added = Number(locAdded) || 0;
@@ -64,7 +73,7 @@ export async function POST(request: NextRequest) {
     const activity = await prisma.activity.create({
       data: {
         userId: currentUser.id,
-        type: "coding",
+        type: activityType,
         title:
           title?.trim() ||
           generateActivityTitle(start, repo?.trim() || null),
@@ -74,6 +83,9 @@ export async function POST(request: NextRequest) {
         locAdded: added,
         locRemoved: removed,
         locNet,
+        tokens: Number(tokens) || 0,
+        filesTouched: Number(filesTouched) || 0,
+        visibility: vis,
         repo: repo?.trim() || null,
         commitCount: Number(commitCount) || 0,
       },

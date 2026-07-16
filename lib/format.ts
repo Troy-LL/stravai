@@ -23,6 +23,15 @@ export function formatLoc(loc: number): string {
   return loc.toLocaleString();
 }
 
+export function formatTokens(tokens: number): string {
+  if (tokens >= 1000) return `${(tokens / 1000).toFixed(1)}k`;
+  return String(tokens);
+}
+
+export function formatNumber(n: number): string {
+  return n.toLocaleString();
+}
+
 export function formatRelativeTime(date: Date): string {
   const now = Date.now();
   const diffMs = now - date.getTime();
