@@ -3,6 +3,7 @@ import { ActivityCard } from "@/components/ActivityCard";
 import { getCurrentUser } from "@/lib/currentUser";
 import { formatDuration, formatLoc, formatTokens } from "@/lib/format";
 import { activityType } from "@/lib/constants";
+import { computeBadges } from "@/lib/badges";
 import {
   getProfileStats,
   getUserActivities,
@@ -24,6 +25,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     getCurrentUser(),
   ]);
 
+  const badges = computeBadges(profileStats);
   const isOwnProfile = currentUser.id === user.id;
   const joined = user.createdAt.toLocaleDateString(undefined, {
     month: "long",
@@ -110,6 +112,19 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           </div>
         </div>
       </section>
+
+      {badges.length > 0 && (
+        <section className="card p-6">
+          <h2 className="mb-4 text-lg font-semibold">Badges</h2>
+          <div className="flex flex-wrap gap-2">
+            {badges.map((b) => (
+              <span key={b.label} className="chip" data-active="true">
+                {b.icon} {b.label}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="card p-6">
         <h2 className="mb-4 text-lg font-semibold">Activity mix</h2>
